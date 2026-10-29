@@ -1,2 +1,4 @@
 User-agent: *
-Disallow: /
+Allow: /
+
+Sitemap: https://laet-builds.github.io/williams-civic-guide/sitemap.xml
