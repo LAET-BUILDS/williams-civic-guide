@@ -543,7 +543,7 @@
           if (lab) lab.textContent = es ? 'Continuar' : 'Continue';
           if (t) t.textContent = (es ? (done + ' de ' + total + ' lecciones terminadas. Sigue: lección ') : (done + ' of ' + total + ' lessons done. Next: lesson ')) + next.n + ', ' + next.t + '.';
         }
-        if (what) what.textContent = ': ' + (es ? 'Lección ' : 'Lesson ') + next.n + ', ' + next.t + (es ? ' (en inglés)' : '');
+        if (what) what.textContent = ': ' + (es ? 'Lección ' : 'Lesson ') + next.n + ', ' + next.t; // the visible .en-tag says (en inglés)
       } else if (nx) {
         if (lab) lab.textContent = es ? 'Repasar' : 'Review';
         if (t) t.textContent = es ? 'Terminó todas las lecciones.' : 'You have finished every lesson.';
@@ -579,4 +579,104 @@
   }
   openFor(location.hash);
   window.addEventListener('hashchange', function () { openFor(location.hash); });
+})();
+
+// Pick-an-answer quizzes (Oct 30, 2026): a tap shows right or wrong, then the existing explanation.
+// Without JavaScript the radios still work and "Show the answer" still opens.
+(function () {
+  var sets = document.querySelectorAll('[data-qm]');
+  if (!sets.length) return;
+  var es = (document.documentElement.lang || '').indexOf('es') === 0;
+  Array.prototype.forEach.call(sets, function (box) {
+    var fb = box.querySelector('[data-qm-fb]'), ans = box.querySelector('details.qm-ans');
+    box.classList.add('qm-js');
+    box.addEventListener('change', function (e) {
+      var r = e.target; if (!r || r.type !== 'radio') return;
+      var ok = r.hasAttribute('data-ok');
+      Array.prototype.forEach.call(box.querySelectorAll('.qm-opt'), function (l) {
+        var inp = l.querySelector('input'); l.classList.remove('qm-picked', 'qm-right', 'qm-wrong');
+        if (inp.hasAttribute('data-ok')) l.classList.add('qm-right');
+        if (inp === r) l.classList.add('qm-picked', ok ? 'qm-right' : 'qm-wrong');
+      });
+      box.classList.add('qm-done');
+      if (fb) fb.textContent = ok ? (es ? '¡Correcto!' : 'Right!') : ((es ? 'No exactamente. La respuesta correcta es: ' : 'Not quite. The right answer is: ') + box.getAttribute('data-qm-right'));
+      if (ans) ans.open = true;
+    });
+  });
+})();
+
+// Mixed-format extra question (Oct 30, 2026): "order the steps" and "match who decides".
+// The Up/Down and Check buttons only appear when JavaScript runs; otherwise "Show the answer and why" still opens.
+(function () {
+  var boxes = document.querySelectorAll('[data-qx]');
+  if (!boxes.length) return;
+  var es = (document.documentElement.lang || '').indexOf('es') === 0; // Spanish final quiz (Oct 30, 2026)
+  Array.prototype.forEach.call(boxes, function (box) {
+    var kind = box.getAttribute('data-qx');
+    var fb = box.querySelector('[data-qm-fb]'), ans = box.querySelector('details.qm-ans');
+    Array.prototype.forEach.call(box.querySelectorAll('[data-qx-js],[data-qx-help]'), function (el) { el.hidden = false; });
+    box.classList.add('qm-js');
+    var list = box.querySelector('[data-qx-list]');
+    function steps() { return Array.prototype.slice.call(list.children); }
+    function stepText(li) { return li.querySelector('.qx-step-t').textContent; }
+    function refresh() {
+      steps().forEach(function (li, i, all) {
+        li.classList.remove('qx-right', 'qx-wrong');
+        var b = li.querySelectorAll('.qx-mv');
+        b[0].disabled = i === 0; b[1].disabled = i === all.length - 1;
+      });
+    }
+    if (list) {
+      refresh();
+      list.addEventListener('click', function (e) {
+        var btn = e.target.closest ? e.target.closest('.qx-mv') : null; if (!btn || btn.disabled) return;
+        var li = btn.closest('li'), dir = +btn.getAttribute('data-mv');
+        if (dir < 0 && li.previousElementSibling) list.insertBefore(li, li.previousElementSibling);
+        else if (dir > 0 && li.nextElementSibling) list.insertBefore(li.nextElementSibling, li);
+        refresh();
+        var pos = steps().indexOf(li) + 1;
+        if (fb) fb.textContent = es ? 'Movió "' + stepText(li) + '" al paso ' + pos + ' de ' + steps().length + '.' : 'Moved "' + stepText(li) + '" to step ' + pos + ' of ' + steps().length + '.';
+        var again = li.querySelector('.qx-mv[data-mv="' + dir + '"]');
+        (again && !again.disabled ? again : li.querySelector('.qx-mv:not([disabled])')).focus();
+      });
+    }
+    var check = box.querySelector('[data-qx-check]');
+    if (check) check.addEventListener('click', function () {
+      var good = 0, total = 0;
+      if (kind === 'order') {
+        steps().forEach(function (li, i) { total++; var ok = +li.getAttribute('data-i') === i; if (ok) good++; li.classList.add(ok ? 'qx-right' : 'qx-wrong'); });
+        if (fb) fb.textContent = good === total ? (es ? '¡Correcto! Ese es el orden correcto.' : 'Right! That is the correct order.') : (es ? 'No exactamente. ' + good + ' de ' + total + ' pasos están en su lugar. El orden correcto es: ' : 'Not quite. ' + good + ' of ' + total + ' steps are in the right place. The right order is: ') +
+          steps().slice().sort(function (a, b) { return a.getAttribute('data-i') - b.getAttribute('data-i'); }).map(function (li, i) { return (i + 1) + '. ' + stepText(li); }).join(' ');
+      } else {
+        var blank = 0;
+        Array.prototype.forEach.call(box.querySelectorAll('.qx-sel'), function (s) {
+          total++; var row = s.closest('.qx-row'); row.classList.remove('qx-right', 'qx-wrong');
+          if (!s.value) { blank++; return; }
+          var ok = s.value === s.getAttribute('data-ans'); if (ok) good++; row.classList.add(ok ? 'qx-right' : 'qx-wrong');
+        });
+        if (blank) { if (fb) fb.textContent = es ? 'Primero elija una respuesta en cada fila (faltan ' + blank + ').' : 'Choose an answer for every row first (' + blank + ' left).'; return; }
+        if (fb) fb.textContent = good === total ? (es ? '¡Correcto! Las ' + total + ' coinciden.' : 'Right! All ' + total + ' match.') : (es ? 'No exactamente. ' + good + ' de ' + total + ' están bien. ' : 'Not quite. ' + good + ' of ' + total + ' are right. ') +
+          Array.prototype.map.call(box.querySelectorAll('.qx-row'), function (r) { return r.querySelector('.qx-issue').textContent + ': ' + r.querySelector('.qx-sel').getAttribute('data-ans') + '.'; }).join(' ');
+      }
+      box.classList.add('qm-done');
+      if (ans) ans.open = true;
+    });
+  });
+})();
+
+// "Who decides?" lookup filter (Oct 30, 2026). Without JavaScript the full table shows and the filter stays hidden.
+(function () {
+  var box = document.querySelector('[data-wd-filter]');
+  if (!box) return;
+  var es = (document.documentElement.lang || '').indexOf('es') === 0;
+  var input = box.querySelector('input'), status = box.querySelector('[role="status"]');
+  var rows = Array.prototype.slice.call(document.querySelectorAll('[data-wd-row]'));
+  var norm = function (t) { return (t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); };
+  var hay = rows.map(function (r) { return norm(r.textContent + ' ' + r.getAttribute('data-k')); });
+  box.hidden = false;
+  input.addEventListener('input', function () {
+    var words = norm(input.value).split(/\s+/).filter(Boolean), shown = 0;
+    rows.forEach(function (r, i) { var ok = words.every(function (w) { return hay[i].indexOf(w) !== -1; }); r.hidden = !ok; if (ok) shown++; });
+    status.textContent = words.length ? (es ? shown + ' de ' + rows.length + ' temas' : shown + ' of ' + rows.length + ' issues') : '';
+  });
 })();
