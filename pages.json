@@ -622,7 +622,7 @@
  {
   "lang": "es",
   "path": "es/city-records/fees/",
-  "title": "Registro de cuotas y tarifas",
+  "title": "Registro de cargos y tarifas",
   "updated": "2026-10-23",
   "review": "pending"
  },
@@ -636,7 +636,7 @@
  {
   "lang": "es",
   "path": "es/city-records/numbers/checklist/",
-  "title": "Lista de cierre: cinco preguntas para cualquier promesa (borrador)",
+  "title": "Lista de verificación final: cinco preguntas para cualquier promesa (borrador)",
   "updated": "2026-11-09",
   "review": "pending"
  },
@@ -657,7 +657,7 @@
  {
   "lang": "es",
   "path": "es/city-records/numbers/one-time-or-ongoing/",
-  "title": "Lección 3: ¿Dinero de una sola vez o continuo? (borrador)",
+  "title": "Lección 3: ¿Dinero de una sola vez o dinero continuo? (borrador)",
   "updated": "2026-11-09",
   "review": "pending"
  },
@@ -776,7 +776,7 @@
  {
   "lang": "es",
   "path": "es/constitutions/ca/article-13d/",
-  "title": "Artículo XIII D de California: las contribuciones y las cuotas relacionadas con la propiedad (Proposición 218)",
+  "title": "Artículo XIII D de California: las contribuciones y los cargos relacionados con la propiedad (Proposición 218)",
   "updated": "2026-11-03",
   "review": "pending"
  },
@@ -1028,14 +1028,14 @@
  {
   "lang": "es",
   "path": "es/constitutions/us/amendment-22/",
-  "title": "Vigésima Segunda Enmienda: el límite de períodos presidenciales",
+  "title": "Vigesimosegunda Enmienda: el límite de períodos presidenciales",
   "updated": "2026-11-03",
   "review": "pending"
  },
  {
   "lang": "es",
   "path": "es/constitutions/us/amendment-23/",
-  "title": "Vigésima Tercera Enmienda: votos electorales para Washington, D.C.",
+  "title": "Vigesimotercera Enmienda: votos electorales para Washington, D.C.",
   "updated": "2026-11-03",
   "review": "pending"
  },
@@ -1049,7 +1049,7 @@
  {
   "lang": "es",
   "path": "es/constitutions/us/amendment-25/",
-  "title": "Vigésima Quinta Enmienda: la sucesión y la incapacidad presidencial",
+  "title": "Vigesimoquinta Enmienda: la sucesión y la incapacidad presidencial",
   "updated": "2026-11-03",
   "review": "pending"
  },
@@ -1189,7 +1189,7 @@
  {
   "lang": "es",
   "path": "es/constitutions/us-constitution/",
-  "title": "La Constitución de EE. UU., artículo por artículo",
+  "title": "La Constitución de EE. UU.: resumen del curso",
   "updated": "2026-10-23",
   "review": "pending"
  },
@@ -1771,12 +1771,12 @@
   "lang": "en",
   "path": "search/",
   "title": "Search this site",
-  "updated": "2026-11-09"
+  "updated": "2026-11-10"
  },
  {
   "lang": "es",
   "path": "es/search/",
   "title": "Buscar en este sitio",
-  "updated": "2026-11-09"
+  "updated": "2026-11-10"
  }
 ]
